@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山东建仑律师事务所 - 律师费计算器</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .calculator-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .law-firm-header {
+            background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .law-firm-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .law-firm-name-en {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .calculator-title {
+            padding: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .calculator-title h1 {
+            color: #1e88e5;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        
+        .calculator-title p {
+            color: #666;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .calculator-body {
+            padding: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #444;
+            font-size: 15px;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #fcfcfc;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #1e88e5;
+            box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.2);
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 136, 229, 0.4);
+        }
+        
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #1e88e5;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e88e5;
+            margin-bottom: 15px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
+            padding: 10px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .result-label {
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .min-fee {
+            color: #43a047;
+        }
+        
+        .mid-fee {
+            color: #1e88e5;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .max-fee {
+            color: #d32f2f;
+        }
+        
+        .formula-details {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed #ccc;
+        }
+        
+        .formula-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #1e88e5;
+        }
+        
+        .formula-step {
+            margin: 8px 0;
+            padding-left: 15px;
+            border-left: 3px solid;
+        }
+        
+        .formula-step.min {
+            border-left-color: #43a047;
+        }
+        
+        .formula-step.max {
+            border-left-color: #d32f2f;
+        }
+        
+        .formula-step.mid {
+            border-left-color: #1e88e5;
+        }
+        
+        .formula-label {
+            font-weight: bold;
+            color: #1e88e5;
+        }
+        
+        .formula-process {
+            color: #d9534f;
+            margin: 3px 0;
+        }
+        
+        .formula-result {
+            font-weight: bold;
+            color: #43a047;
+        }
+        
+        .fixed-fee-result {
+            text-align: center;
+            padding: 15px;
+            background: #fff8e1;
+            border-radius: 8px;
+            border: 1px solid #ffecb3;
+            margin: 15px 0;
+        }
+        
+        .fixed-fee-amount {
+            font-size: 20px;
+            font-weight: bold;
+            color: #d9534f;
+            margin: 10px 0;
+        }
+        
+        .note {
+            font-size: 13px;
+            color: #888;
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            color: #666;
+            font-size: 12px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 480px) {
+            .calculator-body {
+                padding: 15px;
+            }
+            
+            .law-firm-header {
+                padding: 15px;
+            }
+            
+            .calculator-title {
+                padding: 15px;
+            }
+            
+            .calculator-title p {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator-container">
+    <div class="law-firm-header">
+        <div class="law-firm-name">山东建仑律师事务所</div>
+        <div class="law-firm-name-en">SHANDONG JIANLUN LAW FIRM</div>
+    </div>
+    
+    <div class="calculator-title">
+        <h1>律师费计算器</h1>
+        <p>基于《山东建仑律师事务所律师费收费标准》计算</p>
+    </div>
+    
+    <div class="calculator-body">
+        <div class="form-group">
+            <label for="caseType">案件类别</label>
+            <select id="caseType">
+                <option value="civil_property">民商事案件 (涉及财产)</option>
+                <option value="civil_non_property">民商事案件 (不涉及财产)</option>
+            </select>
+        </div>
+
+        <div id="propertyGroup">
+            <div class="form-group">
+                <label for="amount">标的金额 (元)</label>
+                <input type="number" id="amount" placeholder="请输入涉案标的金额" min="0" step="0.01">
+            </div>
+        </div>
+
+        <div id="nonPropertyGroup" class="hidden">
+            <div class="fixed-fee-result">
+                <div>不涉及财产关系的民商事案件</div>
+                <div class="fixed-fee-amount">5,000元 - 50,000元/件</div>
+                <div style="font-size: 14px; color: #666;">(具体金额可与委托人协商确定)</div>
+            </div>
+        </div>
+
+        <button class="calculate-btn" onclick="calculateFee()">
+            计算律师费用
+        </button>
+
+        <div class="result-box" id="resultBox">
+            <div class="result-header">
+                费用计算结果
+            </div>
+            
+            <div id="propertyResultDisplay">
+                <div class="result-item">
+                    <span class="result-label">律师费最低：</span>
+                    <span class="min-fee" id="resMin">0 元</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">律师费最高：</span>
+                    <span class="max-fee" id="resMax">0 元</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">律师费中间值：</span>
+                    <span class="mid-fee" id="resMid">0 元</span>
+                </div>
+                
+                <div class="formula-details" id="formulaDetails">
+                    <!-- 公式详情将通过JS动态生成 -->
+                </div>
+            </div>
+            
+            <div id="nonPropertyResultDisplay" class="hidden">
+                <div class="fixed-fee-result">
+                    <div>不涉及财产关系的民商事案件</div>
+                    <div class="fixed-fee-amount">5,000元 - 50,000元/件</div>
+                    <div style="font-size: 14px; color: #666; margin-top: 10px;">
+                        (具体金额可根据案件复杂程度、耗时、律师资历等因素与委托人协商确定)
+                    </div>
+                </div>
+            </div>
+
+            <div class="note">
+                <p>计算结果仅供参考，实际收费可能根据案件具体情况有所调整</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>山东建仑律师事务所内部工具 © 2025 | 版本 1.0</p>
+    </div>
+</div>
+
+<script>
+    // 收费标准配置
+    const PROPERTY_RATES = [
+        { lower: 0, upper: 10000, rateBase: 0.0, fixedBase: 2000, rateMax: 0.0, fixedMax: 5000 },
+        { lower: 10000, upper: 100000, rateBase: 0.06, fixedBase: 2000, rateMax: 0.09, fixedMax: 2000 },
+        { lower: 100000, upper: 500000, rateBase: 0.05, fixedBase: 2900, rateMax: 0.08, fixedMax: 5100 },
+        { lower: 500000, upper: 1000000, rateBase: 0.04, fixedBase: 7900, rateMax: 0.07, fixedMax: 10100 },
+        { lower: 1000000, upper: 5000000, rateBase: 0.03, fixedBase: 17900, rateMax: 0.06, fixedMax: 20100 },
+        { lower: 5000000, upper: 10000000, rateBase: 0.02, fixedBase: 67900, rateMax: 0.05, fixedMax: 70100 },
+        { lower: 10000000, upper: 50000000, rateBase: 0.01, fixedBase: 167900, rateMax: 0.04, fixedMax: 170100 },
+        { lower: 50000000, upper: Infinity, rateBase: 0.01, fixedBase: 167900, rateMax: 0.02, fixedMax: 170100 }
+    ];
+
+    // DOM元素
+    const caseTypeSelect = document.getElementById('caseType');
+    const propertyGroup = document.getElementById('propertyGroup');
+    const nonPropertyGroup = document.getElementById('nonPropertyGroup');
+    const resultBox = document.getElementById('resultBox');
+    const propertyResultDisplay = document.getElementById('propertyResultDisplay');
+    const nonPropertyResultDisplay = document.getElementById('nonPropertyResultDisplay');
+
+    // 初始化事件监听
+    caseTypeSelect.addEventListener('change', function() {
+        const type = this.value;
+        if (type === 'civil_property') {
+            propertyGroup.classList.remove('hidden');
+            nonPropertyGroup.classList.add('hidden');
+        } else {
+            propertyGroup.classList.add('hidden');
+            nonPropertyGroup.classList.remove('hidden');
+        }
+        resultBox.style.display = 'none';
+    });
+
+    // 格式化金额显示
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('zh-CN', {
+            style: 'currency',
+            currency: 'CNY',
+            minimumFractionDigits: 0
+        }).format(value);
+    }
+    
+    function formatNumber(value) {
+        return value.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    // 计算财产案件费用
+    function calculatePropertyFee(amount, feeType) {
+        // 1万元以下的特殊处理
+        if (amount <= 10000) {
+            const fixedFee = PROPERTY_RATES[0][feeType === 'base' ? 'fixedBase' : 'fixedMax'];
+            return {
+                total: fixedFee,
+                rate: 0,
+                fixed: fixedFee,
+                isFixed: true
+            };
+        }
+
+        // 查找适用的收费区间
+        let matchedBracket = null;
+        for (let i = 1; i < PROPERTY_RATES.length; i++) {
+            const bracket = PROPERTY_RATES[i];
+            if (amount <= bracket.upper || bracket.upper === Infinity) {
+                matchedBracket = bracket;
+                break;
+            }
+        }
+
+        // 应用计算公式
+        if (matchedBracket) {
+            const rate = matchedBracket[feeType === 'base' ? 'rateBase' : 'rateMax'];
+            const fixedFee = matchedBracket[feeType === 'base' ? 'fixedBase' : 'fixedMax'];
+            const total = amount * rate + fixedFee;
+            
+            return {
+                total: total,
+                rate: rate,
+                fixed: fixedFee,
+                isFixed: false
+            };
+        }
+        
+        return { total: 0, rate: 0, fixed: 0, isFixed: false };
+    }
+
+    // 生成公式详情HTML
+    function generateFormulaHTML(amount, baseResult, maxResult) {
+        const amountFormatted = formatNumber(amount);
+        const midTotal = (baseResult.total + maxResult.total) / 2;
+        
+        let baseFormulaStr, baseProcessStr, maxFormulaStr, maxProcessStr;
+
+        if (baseResult.isFixed) {
+            baseFormulaStr = `固定收费`;
+            baseProcessStr = `${formatNumber(baseResult.total)} 元 (该档固定值)`;
+            maxFormulaStr = `固定收费`;
+            maxProcessStr = `${formatNumber(maxResult.total)} 元 (该档固定值)`;
+        } else {
+            baseFormulaStr = `标的额 × ${(baseResult.rate * 100).toFixed(2)}% + ${formatNumber(baseResult.fixed)} 元`;
+            baseProcessStr = `${amountFormatted} × ${baseResult.rate} + ${formatNumber(baseResult.fixed)} = ${formatNumber(baseResult.total)} 元`;
+            
+            maxFormulaStr = `标的额 × ${(maxResult.rate * 100).toFixed(2)}% + ${formatNumber(maxResult.fixed)} 元`;
+            maxProcessStr = `${amountFormatted} × ${maxResult.rate} + ${formatNumber(maxResult.fixed)} = ${formatNumber(maxResult.total)} 元`;
+        }
+
+        const midFormulaStr = `(最低收费 + 最高收费) / 2`;
+        const midProcessStr = `(${formatNumber(baseResult.total)} + ${formatNumber(maxResult.total)}) / 2 = ${formatNumber(midTotal)} 元`;
+
+        return `
+            <div class="formula-title">计算详情</div>
+            
+            <div class="formula-step min">
+                <div class="formula-label">律师费最低：</div>
+                <div class="formula-process">公式：${baseFormulaStr}</div>
+                <div class="formula-result">计算：${baseProcessStr}</div>
+            </div>
+            
+            <div class="formula-step max">
+                <div class="formula-label">律师费最高：</div>
+                <div class="formula-process">公式：${maxFormulaStr}</div>
+                <div class="formula-result">计算：${maxProcessStr}</div>
+            </div>
+            
+            <div class="formula-step mid">
+                <div class="formula-label">律师费中间值：</div>
+                <div class="formula-process">公式：${midFormulaStr}</div>
+                <div class="formula-result">计算：${midProcessStr}</div>
+            </div>
+        `;
+    }
+
+    // 主计算函数
+    function calculateFee() {
+        const type = caseTypeSelect.value;
+        
+        // 隐藏所有结果区域
+        propertyResultDisplay.classList.add('hidden');
+        nonPropertyResultDisplay.classList.add('hidden');
+        
+        if (type === 'civil_property') {
+            const amountInput = document.getElementById('amount');
+            const amount = parseFloat(amountInput.value);
+            
+            if (isNaN(amount) || amount < 0) {
+                alert("请输入有效的标的金额");
+                amountInput.focus();
+                return;
+            }
+            
+            // 计算费用
+            const baseResult = calculatePropertyFee(amount, 'base');
+            const maxResult = calculatePropertyFee(amount, 'max');
+            const midTotal = (baseResult.total + maxResult.total) / 2;
+            
+            // 更新结果显示
+            document.getElementById('resMin').textContent = formatCurrency(baseResult.total);
+            document.getElementById('resMax').textContent = formatCurrency(maxResult.total);
+            document.getElementById('resMid').textContent = formatCurrency(midTotal);
+            
+            // 生成并显示公式详情
+            document.getElementById('formulaDetails').innerHTML = generateFormulaHTML(amount, baseResult, maxResult);
+            
+            // 显示结果
+            propertyResultDisplay.classList.remove('hidden');
+            resultBox.style.display = 'block';
+            
+        } else if (type === 'civil_non_property') {
+            nonPropertyResultDisplay.classList.remove('hidden');
+            resultBox.style.display = 'block';
+        }
+    }
+
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        // 设置默认显示
+        propertyGroup.classList.remove('hidden');
+        nonPropertyGroup.classList.add('hidden');
+        
+        // 添加输入验证
+        const amountInput = document.getElementById('amount');
+        amountInput.addEventListener('input', function() {
+            if (this.value < 0) this.value = Math.abs(this.value);
+        });
+        
+        // 添加键盘支持
+        amountInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateFee();
+            }
+        });
+        
+        // 显示页面加载完成
+        console.log('山东建仑律师事务所律师费计算器已加载完成');
+    });
+</script>
+
+</body>
+</html>
